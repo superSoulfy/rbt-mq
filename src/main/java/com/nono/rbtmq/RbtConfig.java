@@ -63,7 +63,7 @@ public class RbtConfig{
         simpleMessageListenerContainer.setMessageListener(new ChannelAwareMessageListener(){
             @Override
             public void onMessage(Message message,Channel channel) throws Exception{
-                System.out.println("now:【"+new Date()+"】consume queue:【"+message.getMessageProperties().getConsumerQueue()+"】 time:【"+message.getMessageProperties().getTimestamp()+"】 message:【"+new String(message.getBody(),StandardCharsets.UTF_8)+"】");
+                System.out.println("now:【"+new Date()+"】consume queue:【"+message.getMessageProperties().getConsumerQueue()+"】 send-time:【"+message.getMessageProperties().getTimestamp()+"】 message:【"+new String(message.getBody(),StandardCharsets.UTF_8)+"】");
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
             }
         });
