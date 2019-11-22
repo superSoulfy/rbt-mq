@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 @Configuration
 public class RbtConfig{
@@ -27,6 +27,7 @@ public class RbtConfig{
         connectionFactory.setVirtualHost("tvhost");
         connectionFactory.setUsername("admin");
         connectionFactory.setPassword("admin");
+        connectionFactory.setPublisherConfirms(true);
         return connectionFactory;
     }
 
@@ -62,7 +63,7 @@ public class RbtConfig{
         simpleMessageListenerContainer.setMessageListener(new ChannelAwareMessageListener(){
             @Override
             public void onMessage(Message message,Channel channel) throws Exception{
-                System.out.println("consume queue:【"+message.getMessageProperties().getConsumerQueue()+"】 message:【"+new String(message.getBody(),StandardCharsets.UTF_8)+"】");
+                System.out.println("now:【"+new Date()+"】consume queue:【"+message.getMessageProperties().getConsumerQueue()+"】 time:【"+message.getMessageProperties().getTimestamp()+"】 message:【"+new String(message.getBody(),StandardCharsets.UTF_8)+"】");
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
             }
         });

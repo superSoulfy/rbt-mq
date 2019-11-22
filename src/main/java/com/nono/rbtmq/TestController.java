@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,7 @@ public class TestController{
     public Map<String,Object> test(@RequestBody List<String> msgs){
         Map<String,Object> result = new HashMap<>();
         msgs.forEach(msg -> {
-            MessageProperties messageProperties= new MessageProperties();
-            messageProperties.setPriority(1);
+            MessageProperties messageProperties= getMessageProperties();
             Message message = new Message(msg.getBytes(StandardCharsets.UTF_8),messageProperties);
             rabbitTemplate.send(exchange,routeKey,message);
         });
@@ -36,5 +36,18 @@ public class TestController{
         result.put("msg","success");
         result.put("time",System.currentTimeMillis());
         return result;
+    }
+
+    @Value("${msg-ttl:}")
+    public String msgTTL;
+    @Value("${msg-pri:0}")
+    public Integer priority;
+
+    private MessageProperties getMessageProperties(){
+        MessageProperties messageProperties= new MessageProperties();
+        messageProperties.setPriority(priority);
+        messageProperties.setExpiration(msgTTL);
+        messageProperties.setTimestamp(new Date());
+        return messageProperties;
     }
 }
